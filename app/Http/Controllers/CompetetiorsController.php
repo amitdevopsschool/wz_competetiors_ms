@@ -131,7 +131,7 @@ class CompetetiorsController extends Controller
         $response = [
             'success' => true,
             'data' => $data,
-            'message' => 'payments stored successfully.',
+            'message' => 'URL stored successfully.',
         ];
         // if con
 
