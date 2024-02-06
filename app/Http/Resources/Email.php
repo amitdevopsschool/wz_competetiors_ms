@@ -16,6 +16,7 @@ class Email extends JsonResource
     {
         return[
             'id' =>$this->id,
+            'name' => $this->name,
             'project_name' => $this->project_name,
             'website' => $this->website,
             'facebook' => $this->facebook,

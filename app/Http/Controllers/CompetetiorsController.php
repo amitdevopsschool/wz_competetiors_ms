@@ -87,6 +87,7 @@ class CompetetiorsController extends Controller
         $form_data = array(
             'project_name' => $request->project_name,
             'website' => $request->website,
+            'name' => $request->name,
             'facebook' => $request->facebook,
             'youtube' => $request->youtube,
             'twitter' => $request->twitter,
@@ -114,6 +115,7 @@ class CompetetiorsController extends Controller
         Log::info("store me in kiye hai");
         $data = new Competetitors();
         $data->project_name = $request->project_name;
+        $data->name = $request->name;
         $data->website = $request->website;
         $data->facebook = $request->facebook;
         $data->youtube = $request->youtube;
@@ -131,7 +133,7 @@ class CompetetiorsController extends Controller
         $response = [
             'success' => true,
             'data' => $data,
-            'message' => 'URL stored successfully.',
+            'message' => 'Data stored successfully.',
         ];
         // if con
 
