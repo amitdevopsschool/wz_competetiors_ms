@@ -86,6 +86,7 @@ class CompetetiorsController extends Controller
 
         $form_data = array(
             'project_name' => $request->project_name,
+            'project_id' => $request->project_id,
             'website' => $request->website,
             'name' => $request->name,
             'facebook' => $request->facebook,
@@ -115,6 +116,7 @@ class CompetetiorsController extends Controller
         Log::info("store me in kiye hai");
         $data = new Competetitors();
         $data->project_name = $request->project_name;
+        $data->project_id = $request->project_id;
         $data->name = $request->name;
         $data->website = $request->website;
         $data->facebook = $request->facebook;
