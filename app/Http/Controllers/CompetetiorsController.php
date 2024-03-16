@@ -67,23 +67,121 @@ class CompetetiorsController extends Controller
         }
     }
 
+    // public function update(Request $request)
+    // {
+    //     log::info($request . "update ka value aa gaya hai");
+    //     $rules = array(
+    //         // 'email' => 'required',
+    //         // 'phone_number' => 'required',
+    //     );
+    //     $error = Validator::make($request->all(), $rules);
+    //     if ($error->fails()) {
+    //         $response = [
+    //             'success' => false,
+    //             'data' => 'Validation Error.',
+    //             'message' => $validator->errors(),
+    //         ];
+    //         return response()->json($response, 422);
+    //     }
+
+    //     $form_data = array(
+    //         'project_name' => $request->project_name,
+    //         'project_id' => $request->project_id,
+    //         'website' => $request->website,
+    //         'name' => $request->name,
+    //         'facebook' => $request->facebook,
+    //         'youtube' => $request->youtube,
+    //         'twitter' => $request->twitter,
+    //         'linedin' => $request->linedin,
+    //         'instagram' => $request->instagram,
+    //         'pinterest' => $request->pinterest,
+    //         'reddit' => $request->reddit,
+    //         'tiktok' => $request->tiktok,
+
+    //     );
+    //     Competetitors::whereId($request->email_hidden_id)->update($form_data);
+    //     $response = [
+    //         'success' => true,
+    //         'message' => 'URL update successfully.',
+    //     ];
+    //     // return response()->json($response, 200);
+
+    //     return response()->json($response, 200);
+
+    // }
+
+    // public function storedata(Request $request)
+    // {
+    //     Log::info('project name me kya a rha hai' . $request->project_name);
+    //     Log::info("store me in kiye hai");
+    //     $data = new Competetitors();
+    //     $data->project_name = $request->project_name;
+    //     $data->project_id = $request->project_id;
+    //     $data->name = $request->name;
+    //     $data->website = $request->website;
+    //     $data->facebook = $request->facebook;
+    //     $data->youtube = $request->youtube;
+    //     $data->twitter = $request->twitter;
+    //     $data->linedin = $request->linedin;
+    //     $data->instagram = $request->instagram;
+    //     $data->pinterest = $request->pinterest;
+    //     $data->reddit = $request->reddit;
+    //     $data->tiktok = $request->tiktok;
+    //     $data->slug_id = $request->u_org_organization_id;
+    //     $data->slugname = $request->u_org_slugname;
+
+    //     $data->save();
+    //     Log::info('kya kya aa raha hai' . $data);
+    //     $response = [
+    //         'success' => true,
+    //         'data' => $data,
+    //         'message' => 'Data stored successfully.',
+    //     ];
+    //     // if con
+
+    //     return response()->json($response, 200);
+
+    // }
+
     public function update(Request $request)
     {
-        log::info($request . "update ka value aa gaya hai");
+        Log::info($request);
+
         $rules = array(
             // 'email' => 'required',
             // 'phone_number' => 'required',
         );
+
         $error = Validator::make($request->all(), $rules);
+
         if ($error->fails()) {
             $response = [
                 'success' => false,
                 'data' => 'Validation Error.',
-                'message' => $validator->errors(),
+                'message' => $error->errors(),
             ];
             return response()->json($response, 422);
         }
 
+        // Check if there's an existing entry with the same project_id and website
+            $existingEntry = Competetitors::where('slug_id', $request->u_org_organization_id)
+            ->where('project_name', $request->project_name)
+            ->where('website', $request->website)
+            ->where('id', '!=', $request->email_hidden_id)
+            ->first();
+            Log::info('update existingEntry me kya a rha hai' . $existingEntry);
+
+        if ($existingEntry) {
+            // Entry with the same project ID and website already exists
+            $response = [
+                'success' => false,
+                'data' => '',
+                'message' => 'Entry with the same project ID and website already exists.',
+            ];
+            return response()->json($response, 400); // 400 Bad Request status code for duplicate entry
+        }
+
+        // No duplicate entry found, proceed with the update
         $form_data = array(
             'project_name' => $request->project_name,
             'project_id' => $request->project_id,
@@ -97,23 +195,41 @@ class CompetetiorsController extends Controller
             'pinterest' => $request->pinterest,
             'reddit' => $request->reddit,
             'tiktok' => $request->tiktok,
-
         );
+
         Competetitors::whereId($request->email_hidden_id)->update($form_data);
+
         $response = [
             'success' => true,
-            'message' => 'URL update successfully.',
+            'message' => 'URL updated successfully.',
         ];
-        // return response()->json($response, 200);
 
         return response()->json($response, 200);
-
     }
 
     public function storedata(Request $request)
     {
         Log::info('project name me kya a rha hai' . $request->project_name);
-        Log::info("store me in kiye hai");
+        Log::info($request);
+
+        // Check if entry already exists with the same project_id and website
+        $existingEntry = Competetitors::where('project_id', $request->project_id)
+            ->where('project_name', $request->project_name)
+            ->where('website', $request->website)
+            ->first();
+        Log::info('existingEntry me kya a rha hai' . $existingEntry);
+
+        if ($existingEntry) {
+            // Entry already exists, return error message
+            $response = [
+                'success' => false,
+                'data' => '',
+                'message' => 'Entry with the same project Name and website already exists.',
+            ];
+            return response()->json($response, 400); // 400 Bad Request status code for duplicate entry
+        }
+
+        // Entry doesn't exist, proceed to store the data
         $data = new Competetitors();
         $data->project_name = $request->project_name;
         $data->project_id = $request->project_id;
@@ -131,15 +247,17 @@ class CompetetiorsController extends Controller
         $data->slugname = $request->u_org_slugname;
 
         $data->save();
+
         Log::info('kya kya aa raha hai' . $data);
+
         $response = [
             'success' => true,
             'data' => $data,
             'message' => 'Data stored successfully.',
         ];
-        // if con
 
         return response()->json($response, 200);
-
     }
+
+
 }
